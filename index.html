@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="uk">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>SnowTeam — Багатокритеріальний аналіз пушок</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;500;600&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div class="snowflakes" id="snowflakes"></div>
+
+		<div class="container">
+			<header>
+				<div class="logo-line">
+					<span class="logo-icon">❄</span>
+					<div>
+						<h1>SnowTeam</h1>
+						<div class="subtitle">
+							Система підтримки прийняття рішень · Гарматні пушки для осніження
+						</div>
+					</div>
+					<span class="logo-icon">❄</span>
+				</div>
+				<div class="divider"></div>
+				<div
+					style="
+						font-size: 0.78rem;
+						color: var(--text-dim);
+						letter-spacing: 1px;
+					"
+				>
+					Лабораторна робота №1 · Методи багатокритеріального аналізу
+					альтернатив
+				</div>
+			</header>
+
+			<div class="method-tabs">
+				<button class="tab-btn active" onclick="switchMethod(1)" id="tab1">
+					◆ Метод 1 — Нормування
+				</button>
+				<button class="tab-btn" onclick="switchMethod(2)" id="tab2">
+					◆ Метод 2 — Точка задоволення
+				</button>
+			</div>
+
+			<div id="method-desc-1">
+				<div class="card">
+					<div
+						class="card-title fold-header"
+						onclick="toggleFold('desc1-body', 'arrow-desc1')"
+					>
+						📐 Про метод <span id="arrow-desc1" class="fold-arrow">▶</span>
+					</div>
+					<div id="desc1-body" class="fold-content">
+						<p class="fold-desc">
+							Нормування вхідних даних у діапазон [0;1]. Для кожного критерію:
+							мінімальне значення → 0, максимальне → 1 (або навпаки для
+							«витрат»). Далі обчислюються інтегровані оцінки (згортки).
+						</p>
+						<div class="formula-box">
+							M₃(xⱼ) = Σ αᵢ · Oᵢⱼ (середня / лінійна)
+						</div>
+						<div class="formula-box">M₁(xⱼ) = 1 / Σ(αᵢ/Oᵢⱼ) (песимістична)</div>
+						<div class="formula-box">
+							M₂(xⱼ) = Π(Oᵢⱼ^αᵢ) (обережна / геометрична)
+						</div>
+						<div class="formula-box">M₄(xⱼ) = √(Σ αᵢ·Oᵢⱼ²) (оптимістична)</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="method-desc-2" style="display: none">
+				<div class="card">
+					<div
+						class="card-title fold-header"
+						onclick="toggleFold('desc2-body', 'arrow-desc2')"
+					>
+						🎯 Про метод 2 <span id="arrow-desc2" class="fold-arrow">▶</span>
+					</div>
+					<div id="desc2-body" class="fold-content">
+						<p class="fold-desc">
+							Метод заснований на відстані від «точки задоволення» — уявної
+							ідеальної альтернативи T={t₁, t₂, …, tₘ}.
+						</p>
+						<div class="formula-box">
+							zᵢⱼ = 1 − |tᵢ − Oᵢⱼ| / max{tᵢ − min Oᵢⱼ; max Oᵢⱼ − tᵢ}
+						</div>
+						<p class="fold-desc">
+							Потім до нормованої матриці Z застосовується одна із згорток.
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<div class="card-title">⚙ Розмірність задачі</div>
+				<div class="grid2">
+					<div>
+						<label>Кількість альтернатив (пушок)</label>
+						<input type="number" id="nAlt" min="2" max="8" value="4" />
+					</div>
+					<div>
+						<label>Кількість критеріїв</label>
+						<input type="number" id="nCrit" min="2" max="10" value="6" />
+					</div>
+				</div>
+				<div
+					class="btn-row"
+					style="justify-content: flex-start; margin-top: 14px"
+				>
+					<button class="btn btn-primary" onclick="buildTable()">
+						▶ Сформувати таблицю
+					</button>
+				</div>
+			</div>
+
+			<div class="card" id="data-section" style="display: none">
+				<div class="card-title">📊 Матриця оцінок альтернатив</div>
+				<div class="info" style="margin-bottom: 14px">
+					Задайте назви та числові значення для кожної пушки по кожному критерію
+				</div>
+
+				<div id="crit-names-section"></div>
+				<hr class="sep" style="margin: 18px 0" />
+				<div id="alt-names-section"></div>
+				<hr class="sep" style="margin: 18px 0" />
+				<div id="matrix-section"></div>
+				<hr class="sep" style="margin: 18px 0" />
+				<div id="weights-section"></div>
+				<div id="t-inputs-section">
+					<hr class="sep" style="margin: 18px 0" />
+					<div class="card-title" style="margin-bottom: 14px">
+						🎯 Точка задоволення ОПР (T)
+					</div>
+					<div id="t-inputs-row"></div>
+				</div>
+				<hr class="sep" style="margin: 18px 0" />
+				<div style="margin-bottom: 18px">
+					<label>Тип згортки</label>
+					<select id="fold-type">
+						<option value="avg">Середня M₃ (лінійна)</option>
+						<option value="pess">Песимістична M₁</option>
+						<option value="geom">Обережна M₂ (геометрична)</option>
+						<option value="opt">Оптимістична M₄</option>
+						<option value="all">Всі чотири</option>
+					</select>
+				</div>
+				<div class="btn-row" style="justify-content: flex-start">
+					<button class="btn btn-primary" onclick="calculate()">
+						❄ Обчислити найкращу пушку
+					</button>
+					<button class="btn btn-secondary" onclick="fillDemo()">
+						📋 Заповнити демо
+					</button>
+				</div>
+			</div>
+
+			<div id="results">
+				<div class="divider" style="margin: 24px 0"></div>
+				<div class="results-title">🏔 Результати аналізу</div>
+
+				<div class="card">
+					<div class="card-title">🏆 Рейтинг пушок для осніження</div>
+					<div id="results-cards" class="results-grid"></div>
+					<div class="bar-chart" id="results-bars"></div>
+				</div>
+
+				<div class="card" id="all-folds-card" style="display: none">
+					<div
+						class="card-title fold-header"
+						onclick="toggleFold('all-folds-body', 'all-folds-arrow')"
+					>
+						📊 Порівняння всіх згорток
+						<span id="all-folds-arrow" class="fold-arrow">▶</span>
+					</div>
+					<div id="all-folds-body" class="fold-content">
+						<div class="cmp-table-wrap" id="comparison-table"></div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div
+						class="card-title fold-header"
+						onclick="toggleFold('norm-body', 'norm-arrow')"
+					>
+						🔢 Нормована матриця Z
+						<span id="norm-arrow" class="fold-arrow">▶</span>
+					</div>
+					<div id="norm-body" class="fold-content">
+						<div class="norm-table-wrap" id="norm-table"></div>
+					</div>
+				</div>
+
+				<div class="card">
+					<div
+						class="card-title fold-header"
+						onclick="toggleFold('weights-body', 'weights-arrow')"
+					>
+						⚖ Вагові коефіцієнти
+						<span id="weights-arrow" class="fold-arrow">▶</span>
+					</div>
+					<div id="weights-body" class="fold-content">
+						<div id="weights-display"></div>
+					</div>
+				</div>
+
+				<div class="card" id="conclusion-card">
+					<div class="card-title">📝 Висновок</div>
+					<div
+						id="conclusion-text"
+						style="line-height: 1.8; font-size: 0.88rem"
+					></div>
+				</div>
+			</div>
+		</div>
+
+		<script src="script.js"></script>
+	</body>
+</html>
