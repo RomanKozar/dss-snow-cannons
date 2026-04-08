@@ -2,6 +2,10 @@
 
 ### Багатокритеріальний аналіз гарматних пушок для осніження
 
+[![Live Demo](https://img.shields.io/badge/demo-online-blue.svg?style=for-the-badge)](https://romankozar.github.io/dss-snow-cannons/)
+[![Methodology](https://img.shields.io/badge/Method-MCDA--Analysis-cyan.svg?style=for-the-badge)](https://github.com/RomanKozar/dss-snow-cannons)
+[![Version](https://img.shields.io/badge/version-1.0.0-orange.svg?style=for-the-badge)](https://github.com/RomanKozar/dss-snow-cannons/releases)
+
 ![Головна сторінка](preview.png)
 
 > **Лабораторна робота №1** · Методи багатокритеріального аналізу альтернатив
